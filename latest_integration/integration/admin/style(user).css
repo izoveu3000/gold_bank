@@ -1,0 +1,392 @@
+/* Responsive header content shift when sidebar is open */
+/* Reduce header shift when sidebar is open */
+.header-shifted .header-content {
+    margin-left: 180px !important;
+    transition: margin-left 0.3s;
+}
+@media (max-width: 991px) {
+    .header-shifted .header-content {
+        margin-left: 70px !important;
+    }
+}
+#toggleSidebar {
+    margin-left: 6px;
+}
+/* Move header right when sidebar is open */
+/* Responsive header shift when sidebar is open */
+/* Reduce header shift when sidebar is open */
+.header-shifted {
+    margin-left: 70px !important;
+    transition: margin-left 0.3s;
+}
+@media (max-width: 991px) {
+    .header-shifted {
+        margin-left: 70px !important;
+    }
+}
+/* Dashboard Layout Improvements */
+.dashboard-flex {
+    display: flex;
+    min-height: 100vh;
+}
+body, html {
+    overflow-y: scroll;
+}
+/* Sidebar always fixed at 240px width */
+.dashboard-sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #1e293b;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    box-shadow: 2px 0 12px rgba(30,41,59,0.07);
+}
+.dashboard-main {
+    flex: 1;
+    margin-left: 240px;
+    padding: 2.5rem 2rem 2rem 2rem;
+    min-width: 0;
+    transition: margin-left 0.3s;
+}
+@media (max-width: 991px) {
+    .dashboard-sidebar {
+        width: 70px;
+        min-width: 70px;
+    }
+    .dashboard-main {
+        margin-left: 70px;
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+    }
+    /* Only hide nav/logo text when sidebar is collapsed */
+}
+/* Transaction History Styles */
+
+/* Transaction History UI (refined for screenshot match) */
+.transaction-title {
+    font-size: 2.3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    margin-top: 1.5rem;
+}
+.transaction-subtitle {
+    color: #222;
+    font-size: 1.13rem;
+    margin-bottom: 2.2rem;
+}
+.transaction-filter-card {
+    background: #fcfef8;
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 2px 12px rgba(56,142,60,0.04);
+    margin-bottom: 2.5rem;
+}
+.filter-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+}
+.transaction-search {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    font-size: 1.08rem;
+    padding: 0.7rem 1.1rem;
+}
+.transaction-type, .transaction-status {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    font-size: 1.08rem;
+    padding: 0.7rem 1.1rem;
+}
+.transaction-filter-btn {
+    min-width: 180px;
+    font-weight: 600;
+    border-radius: 10px;
+    font-size: 1.08rem;
+    padding: 0.7rem 1.1rem;
+    background: linear-gradient(90deg, #43a047 60%, #b6e2c6 100%);
+    border: none;
+}
+.transaction-list-card {
+    background: #fcfef8;
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 2px 12px rgba(56,142,60,0.04);
+}
+.recent-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1.7rem;
+    color: #222;
+}
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+.transaction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.3rem 1.7rem;
+    box-shadow: 0 1px 8px rgba(56,142,60,0.03);
+    font-size: 1.09rem;
+    transition: box-shadow 0.2s;
+}
+.transaction-item:hover {
+    box-shadow: 0 4px 16px rgba(56,142,60,0.07);
+}
+.transaction-info {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+}
+.transaction-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fffde7;
+    margin-right: 0.7rem;
+    font-size: 1.2rem;
+}
+.transaction-icon.gold {
+    background: #fffde7;
+}
+.transaction-icon.recharge {
+    background: #eaf6ee;
+}
+.transaction-icon.withdraw {
+    background: #ffcdd2;
+}
+.transaction-main {
+    font-weight: 600;
+    color: #222;
+    font-size: 1.08rem;
+}
+.transaction-meta {
+    color: #757575;
+    font-size: 0.99rem;
+}
+.transaction-amount {
+    font-weight: 700;
+    color: #222;
+    font-size: 1.13rem;
+    text-align: right;
+}
+.transaction-amount.gold {
+    color: #fbc02d;
+}
+.transaction-rate {
+    display: block;
+    color: #bdb76b;
+    font-size: 0.97rem;
+    font-weight: 400;
+    margin-top: 0.2rem;
+}
+.transaction-status {
+    padding: 0.38em 1.2em;
+    border-radius: 18px;
+    font-size: 1.01rem;
+    font-weight: 600;
+    margin-left: 1.3rem;
+    display: inline-block;
+    box-shadow: 0 1px 4px rgba(56,142,60,0.04);
+}
+.transaction-status.completed {
+    background: #eaf6ee;
+    color: #43a047;
+}
+.transaction-status.pending {
+    background: #fffde7;
+    color: #fbc02d;
+}
+@media (max-width: 767px) {
+    .transaction-title {
+        font-size: 1.3rem;
+    }
+    .transaction-filter-card, .transaction-list-card {
+        padding: 1rem !important;
+    }
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 1rem 0.7rem;
+    }
+    .transaction-info {
+        gap: 0.5rem;
+    }
+    .transaction-amount, .transaction-status {
+        margin-left: 0;
+    }
+}
+body {
+    background: #f8f9fa;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+.navbar-custom {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    min-height: 60px;
+}
+.notification-icon {
+    margin-right: 10px;
+}
+.profile-icon {
+    background: #eaf6ee;
+    border-radius: 50%;
+    padding: 4px;
+}
+.dashboard-hero {
+    background: linear-gradient(90deg, #388e3c 60%, #fbc02d 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2rem 2rem 1.5rem 2rem;
+    box-shadow: 0 4px 24px rgba(56,142,60,0.08);
+    position: relative;
+}
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+.dashboard-subtitle {
+    font-size: 1.2rem;
+}
+.dashboard-growth {
+    font-weight: 600;
+    color: #ffe082;
+    font-size: 1.1rem;
+}
+.dashboard-hero-icon {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+}
+.dashboard-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+    padding: 1.5rem 1rem;
+    border: none;
+}
+.dashboard-card-icon {
+    background: #eaf6ee;
+    border-radius: 50%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+.dashboard-card-icon.gold {
+    background: #fffde7;
+}
+.dashboard-card-title {
+    font-size: 1rem;
+    color: #388e3c;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.dashboard-card-title.gold {
+    color: #fbc02d;
+}
+.dashboard-card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+}
+.dashboard-card-value.gold {
+    color: #fbc02d;
+}
+.dashboard-card-value.text-success {
+    color: #43a047 !important;
+}
+.dashboard-card-desc {
+    font-size: 0.95rem;
+    color: #757575;
+}
+.dashboard-card-pnl {
+    border-left: 4px solid #43a047;
+}
+.dashboard-buy-btn {
+    background: linear-gradient(90deg, #fbc02d 60%, #ffe082 100%);
+    color: #222;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(251,192,45,0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.dashboard-buy-btn:hover {
+    background: linear-gradient(90deg, #ffe082 60%, #fbc02d 100%);
+    color: #388e3c;
+}
+.dashboard-card-chart {
+    background: #fffde7;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #757575;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+    .dashboard-hero {
+        padding: 1rem;
+        font-size: 1.2rem;
+    }
+    .dashboard-title {
+        font-size: 1.5rem;
+    }
+    .dashboard-card-value {
+        font-size: 1.2rem;
+    }
+}
+.sidebar-transition {
+            transition: all 0.3s ease;
+        }
+        .sidebar-collapsed {
+            width: 80px !important;
+        }
+        .sidebar-collapsed .nav-text {
+            display: none !important;
+        }
+        .sidebar-collapsed .logo-text {
+            display: none !important;
+        }
+        .sidebar-collapsed .expand-icon {
+            transform: rotate(180deg);
+        }
+        .content-expanded {
+            margin-left: 280px !important;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px !important;
+            }
+            .sidebar .nav-text {
+                display: none !important;
+            }
+            .sidebar .logo-text {
+                display: none !important;
+            }
+            .content {
+                margin-left: 80px !important;
+            }
+        }

@@ -1,0 +1,372 @@
+/* Styles extracted from pages/user_page(admin).php - user page admin styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f9f7f0 0%, #e6dfcb 100%);
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 0; /* remove outer page padding so content can be full-bleed */
+}
+
+.container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    background: white;
+    border-radius: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    padding-left: 20px; /* inner spacing */
+    padding-right: 20px;
+}
+
+.header {
+    background: linear-gradient(90deg, #bf953f 0%, #fcf6ba 33%, #b38728 66%, #fbf5b7 100%);
+    color: #333;
+    padding: 25px 30px;
+    border-radius: 0; /* full-bleed header */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.titles h1 {
+    font-weight: 700;
+    font-size: 32px;
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+.titles h2 {
+    color: #5a4a21;
+    font-weight: 500;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 8px 15px;
+    width: 350px;
+    border: 1px solid #d4af37;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    background: transparent;
+}
+
+.search-bar i {
+    color: #b38728;
+    font-size: 18px;
+}
+
+.user-table-container {
+    overflow-x: auto;
+    padding: 20px 30px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.user-table th {
+    background: linear-gradient(to bottom, #bf953f 0%, #b38728 100%);
+    color: white;
+    text-align: left;
+    padding: 18px;
+    font-weight: 600;
+    font-size: 16px;
+    position: sticky;
+    top: 0;
+}
+
+.user-table td {
+    padding: 18px;
+    border-bottom: 1px solid #e1e4e8;
+    font-size: 16px;
+}
+
+.user-table tr:nth-child(even) {
+    background-color: #fffbf0;
+}
+
+.user-table tr:hover {
+    background-color: #f9f2de;
+    transition: background-color 0.2s;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 17px;
+}
+
+.user-email {
+    color: #7f8c8d;
+    font-size: 15px;
+}
+
+.gold {
+    color: #b38728;
+    font-weight: 600;
+}
+
+.money {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.status {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-offline {
+    background-color: #ffecb3;
+    color: #f57c00;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-action {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-view {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-message:hover {
+    background-color: #9c7424;
+    transform: translateY(-2px);
+} 
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .user-table {
+        min-width: 1000px;
+    }
+}
+
+@media (max-width: 992px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .search-bar {
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .user-table {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 20px;
+    }
+    
+    .titles h1 {
+        font-size: 28px;
+    }
+    
+    .titles h2 {
+        font-size: 18px;
+    }
+    
+    .user-table th,
+    .user-table td {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+    
+    .btn-action {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .user-table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        border-radius: 10px;
+    }
+    
+    .header {
+        padding: 15px;
+    }
+    
+    .user-table-container {
+        padding: 10px;
+    }
+    
+    .user-table {
+        min-width: 700px;
+    }
+}
+
+.table-scroll-info {
+    text-align: center;
+    padding: 10px;
+    color: #7f8c8d;
+    font-style: italic;
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .table-scroll-info {
+        display: block;
+    }
+}
+
+.stats-bar {
+    display: flex;
+    justify-content: space-around;
+    background: #f8f5e6;
+    padding: 15px;
+    border-bottom: 1px solid #e1dcc1;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #b38728;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+    gap: 10px;
+}
+.pagination-button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #d4af37;
+    background: white;
+    color: #5a4a21;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+.pagination-button:hover {
+    background: #b38728;
+    color: white;
+}
+.pagination-button.active {
+    background: #b38728;
+    color: white;
+    font-weight: 700;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.status-dot.online {
+    background-color: #00c853;
+}
+
+.status-dot.offline {
+    background-color: #ccc;
+}
+
+.btn-message {
+    background-color: #b38728;
+    color: white;
+    position: relative;       /* ← anchor for absolute badge */
+    padding: 8px 20px 8px 14px; /* add right padding so badge doesn't overlap text */
+    overflow: visible;        /* usually default, but keep it explicit */
+}
+
+.unread-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    z-index: 10;
+    background-color: #ff4757;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 1;
+}
