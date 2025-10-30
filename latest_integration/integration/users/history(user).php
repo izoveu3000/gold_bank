@@ -227,13 +227,13 @@ include 'header.php';
 						</div>
 						<div class="col-md-4">
 							<select id="transactionType" class="form-select" style="border-radius:10px;">
-								<option value="" selected> Transaction Types</option>
-								<option value="all" >All </option>
-
-								<option value="Gold Purchase">Gold Purchase</option>
-								<option value="Account Recharge">Account Recharge</option>
-								<option value="Withdrawal Request">Withdrawal Request</option>
-							</select>
+                                <option value="" selected> Transaction Types</option>
+                                <option value="all" >All </option>
+                                <option value="Gold Purchase">Gold Purchase</option>
+                                <option value="Gold Sell">Gold Sell</option>
+                                <option value="Account Recharge">Account Recharge</option>
+                                <option value="Withdrawal Request">Withdrawal Request</option>
+                            </select>
 						</div>
 						<div class="col-md-4">
 							<select id="statusFilter" class="form-select" style="border-radius:10px;">
@@ -353,6 +353,10 @@ function loadRecentTransactions() {
                     typeDisplay = 'Gold Purchase';
                     icon = 'dollar-sign';
                     iconStyle = 'background:#fff7e6;color:#a67c00;';
+                } else if (transaction.transaction_type === 'sell gold') {
+                    typeDisplay = 'Gold Sell';
+                    icon = 'trending-down';
+                    iconStyle = 'background:#fff0f0;color:#d32f2f;';
                 } else if (transaction.transaction_type === 'deposit') {
                     typeDisplay = 'Account Recharge';
                     icon = 'plus-circle';
@@ -369,7 +373,7 @@ function loadRecentTransactions() {
                 
                 // Format amount based on transaction type
                 let amountDisplay = '';
-                if (transaction.transaction_type === 'gold purchase') {
+                if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
                     amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
                 } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
                     amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
@@ -379,7 +383,7 @@ function loadRecentTransactions() {
                 
                 // Format price based on transaction type
                 let priceDisplay = '';
-                if (transaction.transaction_type === 'gold purchase') {
+                if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
                     priceDisplay = new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
@@ -394,7 +398,7 @@ function loadRecentTransactions() {
                 const totalValue = transaction.amount * transaction.price;
                 let totalDisplay = '';
                 
-                if (transaction.transaction_type === 'gold purchase') {
+                if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
                     totalDisplay = new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
@@ -575,6 +579,10 @@ function displayTransactions(transactions) {
             typeDisplay = 'Gold Purchase';
             icon = 'dollar-sign';
             iconStyle = 'background:#fff7e6;color:#a67c00;';
+        } else if (transaction.transaction_type === 'sell gold') {
+            typeDisplay = 'Gold Sell';
+            icon = 'trending-down';
+            iconStyle = 'background:#fff0f0;color:#d32f2f;';
         } else if (transaction.transaction_type === 'deposit') {
             typeDisplay = 'Account Recharge';
             icon = 'plus-circle';
@@ -591,7 +599,7 @@ function displayTransactions(transactions) {
         
         // Format amount based on transaction type
         let amountDisplay = '';
-        if (transaction.transaction_type === 'gold purchase') {
+        if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
             amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
         } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
             amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
@@ -601,7 +609,7 @@ function displayTransactions(transactions) {
         
         // Format price based on transaction type
         let priceDisplay = '';
-        if (transaction.transaction_type === 'gold purchase') {
+        if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
             priceDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
@@ -616,7 +624,7 @@ function displayTransactions(transactions) {
         const totalValue = transaction.amount * transaction.price;
         let totalDisplay = '';
         
-        if (transaction.transaction_type === 'gold purchase') {
+        if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
             totalDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
@@ -638,16 +646,12 @@ function displayTransactions(transactions) {
             second: '2-digit'
         });
         
-        // Determine status badge style
+        // Determine status badge style - ONLY approved and rejected
         let statusBadge = '';
-        if (transaction.transaction_status === 'approve') {
+        if (transaction.transaction_status === 'approved') {
             statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #2e7d32; color:#2e7d32; background: #eafaf1; padding:0.45em 1.2em; font-weight:500;">Completed</span>`;
         } else if (transaction.transaction_status === 'rejected') {
             statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #d32f2f; color:#d32f2f; background: #ffebee; padding:0.45em 1.2em; font-weight:500;">Rejected</span>`;
-        } else if (transaction.transaction_status === 'cancelled') {
-            statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #757575; color:#757575; background: #f5f5f5; padding:0.45em 1.2em; font-weight:500;">Cancelled</span>`;
-        } else {
-            statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #ff9800; color:#ff9800; background: #fff3e0; padding:0.45em 1.2em; font-weight:500;">Pending</span>`;
         }
         
         html += `

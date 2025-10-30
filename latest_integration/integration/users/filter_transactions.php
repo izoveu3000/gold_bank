@@ -27,7 +27,7 @@ try {
     // Check if we should show filtered results
     $is_filtered = $has_search || $has_type_filter || $has_status_filter || $has_all_types || $has_all_status;
 
-    // Build base query - REMOVED currency join since currency table is deleted
+    // Build base query - ONLY show approved and rejected transactions
     $query = "SELECT 
                 t.transaction_id,
                 t.user_id,
@@ -40,7 +40,7 @@ try {
                 ta.reference_number
             FROM transaction t
             LEFT JOIN transaction_approve ta ON t.transaction_id = ta.tran_id
-            WHERE t.transaction_status != 'pending' AND t.transaction_status != '1'
+            WHERE t.transaction_status IN ('approved', 'rejected')
             AND t.user_id = ?"; // <-- SECURITY FIX: User ID is ALWAYS filtered here
 
     $params = [$user_id]; // <-- SECURITY FIX: User ID is the first parameter
@@ -92,12 +92,14 @@ try {
         $types .= 's';
     }
 
-    // Apply transaction type filter
+    // Apply transaction type filter - FIXED: Consistent filter names
     if ($has_type_filter) {
         if ($transaction_type === 'Account Recharge') {
             $query .= " AND t.transaction_type = 'deposit'";
         } elseif ($transaction_type === 'Gold Purchase') {
             $query .= " AND t.transaction_type = 'gold purchase'";
+        } elseif ($transaction_type === 'Gold Sell') {
+            $query .= " AND t.transaction_type = 'sell gold'";
         } elseif ($transaction_type === 'Withdrawal Request') {
             $query .= " AND t.transaction_type = 'withdrawal request'";
         }
@@ -134,19 +136,21 @@ try {
     }
 
     // --- Get total count for pagination ---
-    $count_where_clause = "WHERE t.transaction_status != 'pending' AND t.transaction_status != '1' AND t.user_id = $user_id";
+    $count_where_clause = "WHERE t.transaction_status IN ('approved', 'rejected') AND t.user_id = $user_id";
 
     if ($has_search) {
         $safe_search_id = $conn->real_escape_string($search_id);
         $count_where_clause .= " AND ta.reference_number LIKE '%$safe_search_id%'";
     }
     
-    // Apply the same type filters for count query
+    // Apply the same type filters for count query - FIXED: Consistent with main query
     if ($has_type_filter) {
         if ($transaction_type === 'Account Recharge') {
             $count_where_clause .= " AND t.transaction_type = 'deposit'";
         } elseif ($transaction_type === 'Gold Purchase') {
             $count_where_clause .= " AND t.transaction_type = 'gold purchase'";
+        } elseif ($transaction_type === 'Gold Sell') {
+            $count_where_clause .= " AND t.transaction_type = 'sell gold'";
         } elseif ($transaction_type === 'Withdrawal Request') {
             $count_where_clause .= " AND t.transaction_type = 'withdrawal request'";
         }
