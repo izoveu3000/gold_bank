@@ -249,7 +249,13 @@
     .edit-form-group {
         margin-bottom: 16px;
     }
-
+/* Ensure formatted numbers display properly in text inputs */
+.edit-form-input[type="text"] {
+    font-family: monospace;
+    text-align: left;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
     .edit-form-label {
         display: block;
         font-size: 1rem;
@@ -437,12 +443,12 @@ include 'header.php';
            
             <div class="edit-form-group">
                 <label class="edit-form-label" id="editAmountLabel">Requested Amount</label>
-                <input type="number" id="editAmount" class="edit-form-input" readonly />
+                <input type="text" id="editAmount" class="edit-form-input" readonly />
             </div>
-            
+
             <div class="edit-form-group">
                 <label class="edit-form-label" id="editPriceLabel">Total Amount</label>
-                <input type="number" id="editPrice" class="edit-form-input" readonly/>
+                <input type="text" id="editPrice" class="edit-form-input" readonly/>
             </div>
             
             <!-- Bank Selection (only for deposit and withdraw) -->
@@ -680,6 +686,7 @@ include 'header.php';
         });
     });
 }
+
 // New function to fetch and populate the modal with data
 function fetchTransactionData(transactionId) {
     fetch(`fetch_transaction_details.php?transaction_id=${transactionId}`)
@@ -705,7 +712,8 @@ function fetchTransactionData(transactionId) {
                 existingImageGroup.style.display = 'none';
 
                 // 1. Populate Input Fields
-                document.getElementById('editAmount').value = tx.amount;
+               // 1. Populate Input Fields WITH COMMA FORMATTING
+                document.getElementById('editAmount').value = tx.amount_formatted;
                 document.getElementById('editPrice').value = tx.total_mmk;
                 document.getElementById('editReferenceNumber').value = tx.reference_number || '';
                 
@@ -719,7 +727,7 @@ function fetchTransactionData(transactionId) {
                     fileUploadGroup.style.display = 'block';
                     bankLabel.textContent = 'Payment Bank';
                     
-                    document.getElementById('editAmountLabel').textContent = 'Request Amount (USD):';
+                    document.getElementById('editAmountLabel').textContent = 'Request Amount (MMK):';
                     document.getElementById('editPriceLabel').textContent = 'Total To Transfer (MMK):';
 
                 } else if (transactionType === 'withdraw') {
@@ -728,7 +736,7 @@ function fetchTransactionData(transactionId) {
                     // fileUploadGroup.style.display = 'block';
                     bankLabel.textContent = 'Your Selected Bank';
                     
-                    document.getElementById('editAmountLabel').textContent = 'Withdraw Amount (USD):';
+                    document.getElementById('editAmountLabel').textContent = 'Withdraw Amount (MMK):';
                     document.getElementById('editPriceLabel').textContent = 'You\'ll Receive (MMK):';
 
                 } else if (transactionType === 'gold purchase') {

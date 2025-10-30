@@ -311,8 +311,7 @@ include 'header.php';
                             <div id="bank-details-container">
                                 <b id="account-number-label" style="display: none;">Account Number:</b> <span id="account-number-value"></span><br>
                             
-                                <b>Requested Amount (Coins):</b> <?php echo number_format($amount,0); ?> Coins<br>
-                                <b>Amount (MMK):</b> <?php echo number_format($amount_mmk, 0); ?> MMK<br>
+                                <b>Requested Amount (MMK):</b> <?php echo number_format($amount,0); ?> MMK<br>
                                 <b>Service Fee (MMK):</b> <?php echo number_format($service_fee_mmk, 0); ?> MMK<br>
                                 <b>Total to Transfer (MMK):</b> <?php echo number_format($total_to_transfer_mmk, 0); ?> MMK<br>
                             </div>

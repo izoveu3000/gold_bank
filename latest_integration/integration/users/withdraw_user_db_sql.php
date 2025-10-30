@@ -44,7 +44,7 @@ if ($data) {
     $bank_id = $data['bank_id'];
     $type = "withdraw";
     $status= "pending";
-    $price = 1000;
+    $price = 1;
 
     $stmt = $conn->prepare("INSERT INTO transaction(user_id,amount,price,transaction_type,transaction_status) values (?,?,?,?,?);");
     $stmt->bind_param("iddss",$user_id,$amount,$price,$type,$status );

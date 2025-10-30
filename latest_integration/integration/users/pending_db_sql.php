@@ -82,8 +82,8 @@ if ($result->num_rows > 0) {
         if ($type === 'deposit') {
             $icon_html = '<div class="pending-icon" style="background:#e6f7ff;color:#0066cc;"><i data-feather="plus-circle"></i></div>';
             $title_html = 'Account Recharge';
-            $amount_label = 'Request Amount (USD):';
-            $amount_value = '$'.$amount;
+            $amount_label = 'Request Amount (MMK):';
+            $amount_value = $amount.'MMK';
             $Service_Name ='Service Fee';
             $service_val='+'.$service_fee . ' MMK';
             $price_label = 'Total To Transfer (MMK):';
@@ -93,8 +93,8 @@ if ($result->num_rows > 0) {
         elseif ($type === 'withdraw') {
             $icon_html = '<div class="pending-icon" style="background:#fff0f0;color:#cc0000;"><i data-feather="arrow-up-circle"></i></div>';
             $title_html = 'Withdrawal Request';
-            $amount_label = 'Withdraw Amount (USD):';
-            $amount_value = '$'.$amount;
+            $amount_label = 'Withdraw Amount (MMK):';
+            $amount_value = $amount.'MMK';
             $Service_Name ='Service Fee';
             $service_val='-'.$service_fee . ' MMK';
 
@@ -108,10 +108,10 @@ if ($result->num_rows > 0) {
             $amount_label = 'Gold Amount:';
             $amount_value = $amount . ' kt';
             $Service_Name = 'Buy Price';
-            $service_val=$price .' Coin';
+            $service_val=$price .' MMK';
 
-            $price_label = 'Total Cost (Coin):';
-            $price_value = '$'.$adjusted_value ;
+            $price_label = 'Total Cost (MMK):';
+            $price_value = $adjusted_value.'MMK';
             $badge_style = 'background:#ffe8b3;color:#a67c00;';
         }elseif ($type === 'user_gold_sell') {
             $icon_html = '<div class="pending-icon" style="background:#fff7e6;color:#a67c00;"><i data-feather="dollar-sign"></i></div>';
@@ -119,9 +119,9 @@ if ($result->num_rows > 0) {
             $amount_label = 'Gold Amount:';
             $amount_value = $amount . ' kt';
             $Service_Name = 'Sell Price';
-            $service_val=$price .' Coin';
+            $service_val=$price .' MKK';
 
-            $price_label = 'Total Cost (Coin):';
+            $price_label = 'Total Cost (MMK):';
             $price_value = '$'.$adjusted_value ;
             $badge_style = 'background:#ffe8b3;color:#a67c00;';
         }

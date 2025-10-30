@@ -58,7 +58,7 @@ try {
             $adjusted_value = $base_amount + $service_fee;
         } elseif ($transaction_type === 'withdraw') {
             // For withdrawal and sell gold, SUBTRACT the service fee
-            $service_fee =0;
+            $service_fee = 0;
             $adjusted_value = $base_amount - $service_fee;
         }   elseif ($transaction_type === 'user_gold_buy') {
             // For withdrawal and sell gold, SUBTRACT the service fee
@@ -70,11 +70,15 @@ try {
             $adjusted_value = $base_amount - $service_fee;
         }
         
-        // Add calculated values to the response
-        $transaction['base_amount'] = number_format($base_amount, 0, '.', '');
-        $transaction['service_fee'] = number_format($service_fee, 0, '.', '');
-        $transaction['total_adjusted'] = number_format($adjusted_value, 0, '.', '');
-        $transaction['total_mmk'] = number_format($adjusted_value, 0, '.', ''); // Keep for backward compatibility
+        // Add calculated values to the response WITH COMMA FORMATTING
+        $transaction['base_amount'] = number_format($base_amount, 2, '.', ',');
+        $transaction['service_fee'] = number_format($service_fee, 2, '.', ',');
+        $transaction['total_adjusted'] = number_format($adjusted_value, 2, '.', ',');
+        $transaction['total_mmk'] = number_format($adjusted_value, 2, '.', ','); // Keep for backward compatibility
+        
+        // Also format the original amount and price with commas
+        $transaction['amount_formatted'] = number_format($transaction['amount'], 2, '.', ',');
+        $transaction['price_formatted'] = number_format($transaction['price'], 2, '.', ',');
         
         // Fetch banks based on transaction type
         if ($transaction_type === 'withdraw') {

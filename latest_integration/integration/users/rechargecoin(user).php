@@ -178,35 +178,35 @@ include 'header.php';
                         </div>
                     </div>
                          <div class="packages">
-                        <div class="package" data-amount="1000">
-                            <div class="package-amount">1,000 Coins</div>
-                            <div class="package-total">Total: MMK1,000,000</div>
+                        <div class="package" data-amount="1000000">
+                            <div class="package-amount">1,000,000 MMK</div>
+                            <!-- <div class="package-total">Total: MMK</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
-                        <div class="package" data-amount="2500">
-                            <div class="package-amount">2,500 Coins</div>
-                            <div class="package-total">Total: MMK2,500,000</div>
+                        <div class="package" data-amount="2500000">
+                            <div class="package-amount">2,500,000 MMK</div>
+                            <!-- <div class="package-total">Total: MMK2,500,000</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
-                        <div class="package" data-amount="5000">
+                        <div class="package" data-amount="5000000">
                             <span class="popular">Popular</span>
-                            <div class="package-amount">5,000 Coins</div>
-                            <div class="package-total">Total: MKK5,000,000</div>
+                            <div class="package-amount">5,000,000 MMK</div>
+                            <!-- <div class="package-total">Total: MKK5,000,000</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
-                        <div class="package" data-amount="10000">
-                            <div class="package-amount">10,000 Coins</div>
-                            <div class="package-total">Total: MKK10,000,000</div>
+                        <div class="package" data-amount="10000000">
+                            <div class="package-amount">10,000,000 MMK</div>
+                            <!-- <div class="package-total">Total: MKK10,000,000</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
-                        <div class="package" data-amount="25000">
-                            <div class="package-amount">25,000 Coins</div>
-                            <div class="package-total">Total: MKK25,000,000</div>
+                        <div class="package" data-amount="25000000">
+                            <div class="package-amount">25,000,000 MMK</div>
+                            <!-- <div class="package-total">Total: MKK25,000,000</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
-                        <div class="package" data-amount="50000">
-                            <div class="package-amount">50,000 Coins</div>
-                            <div class="package-total">Total: MKK50,000,000</div>
+                        <div class="package" data-amount="50000000">
+                            <div class="package-amount">50,000,000 MMK</div>
+                            <!-- <div class="package-total">Total: MKK50,000,000</div> -->
                             <span class="checkmark">&#10003;</span>
                         </div>
                     </div>
@@ -215,9 +215,9 @@ include 'header.php';
                
                     <div class="custom-section">
                         <div class="custom-label">Custom Amount</div>
-                        <label for="customAmount" style="color: #1a4d2e; font-size: 1rem;">Enter Custom Amount (Coins)</label>
-                        <input type="number" id="customAmount" class="custom-input" placeholder="Enter amount..." min="100">
-                        <div class="custom-note">Minimum recharge amount is 100 Coins</div>
+                        <label for="customAmount" style="color: #1a4d2e; font-size: 1rem;">Enter Custom Amount (MMK)</label>
+                        <input type="number" id="customAmount" class="custom-input" placeholder="Enter amount..." min="1000000">
+                        <div class="custom-note">Minimum recharge amount is 1,000,000 MMK</div>
             <div id="paymentSection" style="display:none; margin-top:32px;">
                 <div style="font-size:1.2rem; color:#1a4d2e; margin-bottom:16px; text-align:center;">Recharge Amount: <span id="rechargeAmount"></span></div>
                 <button id="proceedBtn" style="display:block; margin:0 auto; background:#219a43; color:#fff; border:none; border-radius:6px; padding:12px 32px; font-size:1.1rem; font-weight:600; cursor:pointer;">Proceed to Payment</button>
@@ -271,7 +271,7 @@ include 'header.php';
             //comment
             // let bonus = parseInt(this.getAttribute('data-bonus')) || 0;
             selectedAmount = amount ;
-            rechargeAmount.textContent = `${selectedAmount.toLocaleString()} Coins`;
+            rechargeAmount.textContent = `${selectedAmount.toLocaleString()} MMK`;
             paymentSection.style.display = 'block';
             customInput.value = '';
         });
@@ -280,7 +280,7 @@ include 'header.php';
     customInput.addEventListener('input', function() {
         packages.forEach(p => p.classList.remove('selected'));
         let val = parseInt(this.value);
-        if (val && val >= 100) {
+        if (val && val >= 1000000) {
             selectedAmount = val;
             rechargeAmount.textContent = `${selectedAmount.toLocaleString()} Coins`;
             paymentSection.style.display = 'block';
