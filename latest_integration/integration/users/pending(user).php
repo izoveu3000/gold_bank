@@ -176,6 +176,35 @@
             margin-left: 0;
         }
     }
+    /* Style for the amount display container */
+.amount-display-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8fcf7;
+    border-radius: 8px;
+    border: 1px solid #dbeedc;
+    margin-bottom: 16px;
+}
+
+.amount-item {
+    flex: 1;
+}
+
+.amount-label {
+    font-size: 0.9rem;
+    color: #6c8e6b;
+    margin-bottom: 4px;
+}
+
+.amount-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a4d2e;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
 	.file-upload-btn {
     display: inline-flex;
     align-items: center;
@@ -220,6 +249,7 @@
         padding: 24px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         width: 90%;
+        height: auto;
         max-width: 500px;
     }
 
@@ -441,14 +471,18 @@ include 'header.php';
         <div class="edit-modal-body">
             <input type="hidden" id="editTransactionId">
            
+            <!-- Amount Information - Inline Labels -->
             <div class="edit-form-group">
-                <label class="edit-form-label" id="editAmountLabel">Requested Amount</label>
-                <input type="text" id="editAmount" class="edit-form-input" readonly />
-            </div>
-
-            <div class="edit-form-group">
-                <label class="edit-form-label" id="editPriceLabel">Total Amount</label>
-                <input type="text" id="editPrice" class="edit-form-input" readonly/>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fcf7; border-radius: 8px; border: 1px solid #dbeedc;">
+                    <div>
+                        <div style="font-size: 0.9rem; color: #6c8e6b; margin-bottom: 4px;" id="editAmountLabel">Request Amount</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #1a4d2e; font-family: monospace;" id="editAmountValue">-</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.9rem; color: #6c8e6b; margin-bottom: 4px;" id="editPriceLabel">Total Amount</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #1a4d2e; font-family: monospace;" id="editPriceValue">-</div>
+                    </div>
+                </div>
             </div>
             
             <!-- Bank Selection (only for deposit and withdraw) -->
@@ -463,22 +497,25 @@ include 'header.php';
                 <input type="text" id="editReferenceNumber" class="edit-form-input" />
             </div>
 
-            <!-- File Upload (only for deposit and withdraw) -->
+            <!-- File Upload Section with View Current Receipt -->
             <div class="edit-form-group" id="file-upload-group" style="display: none;">
+                <label class="edit-form-label">Receipt</label>
+                
+                <!-- View Current Receipt Link -->
+                <div id="viewCurrentReceiptContainer" style="margin-bottom: 12px; display: none;">
+                    <a href="#" target="_blank" id="existingImageLink" class="file-view-link">
+                        <i data-feather="eye" style="width:16px;height:16px;margin-right:6px;"></i>
+                        View Current Receipt
+                    </a>
+                </div>
+
+                <!-- Upload New File -->
                 <label class="file-upload-btn">
                     <i data-feather="upload" style="width:18px;height:18px;margin-right:6px;"></i>
                     <input type="file" id="editFile" class="edit-form-file-input" />
-                    <span id="uploadButtonText">Upload Image File</span>
+                    <span id="uploadButtonText">Upload New Receipt</span>
                 </label>
                 <span id="fileStatusContainer" class="ml-3"></span>
-            </div>
-
-            <!-- Existing Image (only for deposit and withdraw) -->
-            <div class="edit-form-group" id="existingImageGroup" style="display:none;">
-                <label class="edit-form-label">Existing Receipt Image</label>
-                <div style="border: 1px dashed #dbeedc; padding: 10px; border-radius: 8px;">
-                    <a href="#" target="_blank" id="existingImageLink" class="text-green-600 font-medium">View Image</a>
-                </div>
             </div>
 
         </div>
@@ -687,7 +724,7 @@ include 'header.php';
     });
 }
 
-// New function to fetch and populate the modal with data
+// Function to fetch and populate the modal with data
 function fetchTransactionData(transactionId) {
     fetch(`fetch_transaction_details.php?transaction_id=${transactionId}`)
         .then(response => response.json())
@@ -697,24 +734,23 @@ function fetchTransactionData(transactionId) {
                 const bankSelect = document.getElementById('editBankSelect');
                 const fileStatusContainer = document.getElementById('fileStatusContainer');
                 const editFile = document.getElementById('editFile');
+                const viewCurrentReceiptContainer = document.getElementById('viewCurrentReceiptContainer');
                 
                 // Get UI elements for conditional display
                 const bankGroup = document.getElementById('bank-select-group');
                 const referenceGroup = document.getElementById('reference-group');
                 const fileUploadGroup = document.getElementById('file-upload-group');
-                const existingImageGroup = document.getElementById('existingImageGroup');
                 const bankLabel = document.getElementById('bankLabel');
 
                 // Reset all groups to hidden first
                 bankGroup.style.display = 'none';
                 referenceGroup.style.display = 'none';
                 fileUploadGroup.style.display = 'none';
-                existingImageGroup.style.display = 'none';
+                viewCurrentReceiptContainer.style.display = 'none';
 
-                // 1. Populate Input Fields
-               // 1. Populate Input Fields WITH COMMA FORMATTING
-                document.getElementById('editAmount').value = tx.amount_formatted;
-                document.getElementById('editPrice').value = tx.total_mmk;
+                // 1. Populate Amount Values - Now as labels
+                document.getElementById('editAmountValue').textContent = tx.amount_formatted;
+                document.getElementById('editPriceValue').textContent = tx.total_mmk;
                 document.getElementById('editReferenceNumber').value = tx.reference_number || '';
                 
                 // 2. Update labels and show/hide fields based on transaction type
@@ -732,19 +768,19 @@ function fetchTransactionData(transactionId) {
 
                 } else if (transactionType === 'withdraw') {
                     // Withdraw: Show bank and file upload, but NOT reference
-                     bankGroup.style.display = 'block';
-                    // fileUploadGroup.style.display = 'block';
+                    bankGroup.style.display = 'block';
+                    fileUploadGroup.style.display = 'block';
                     bankLabel.textContent = 'Your Selected Bank';
                     
                     document.getElementById('editAmountLabel').textContent = 'Withdraw Amount (MMK):';
                     document.getElementById('editPriceLabel').textContent = 'You\'ll Receive (MMK):';
 
-                } else if (transactionType === 'gold purchase') {
+                } else if (transactionType === 'user_gold_buy') {
                     // Gold Purchase: Only show basic info
                     document.getElementById('editAmountLabel').textContent = 'Gold Amount (oz):';
                     document.getElementById('editPriceLabel').textContent = 'Total Cost (USD):';
 
-                } else if (transactionType === 'sell gold') {
+                } else if (transactionType === 'user_gold_sell') {
                     // Sell Gold: Only show basic info
                     document.getElementById('editAmountLabel').textContent = 'Gold Amount (oz):';
                     document.getElementById('editPriceLabel').textContent = 'You\'ll Receive (USD):';
@@ -764,27 +800,25 @@ function fetchTransactionData(transactionId) {
                 
                 // 4. Handle Image/File Display
                 editFile.value = ''; // Clear file input on modal open
-                document.getElementById('uploadButtonText').textContent = 'Upload New Image';
+                document.getElementById('uploadButtonText').textContent = 'Upload New Receipt';
                 
-                fileStatusContainer.innerHTML = ''; // Clear container first
+                fileStatusContainer.innerHTML = ''; // Clear status container
 
                 if (tx.image && tx.image !== '') {
-                    // Show existing image
-                    existingImageGroup.style.display = 'block';
+                    // Show View Current Receipt link
+                    viewCurrentReceiptContainer.style.display = 'block';
                     document.getElementById('existingImageLink').href = 'uploads/' + tx.image;
                     
-                    // Also show in file status container
-                    const imageLink = document.createElement('a');
-                    imageLink.href = 'uploads/' + tx.image;
-                    imageLink.target = '_blank';
-                    imageLink.classList.add('file-view-link');
-                    imageLink.innerHTML = `<i data-feather="image" style="width:18px;height:18px;margin-right:6px;"></i> View Current Receipt`;
-                    fileStatusContainer.appendChild(imageLink);
-                } else {
-                    // No file uploaded
+                    // Show upload status message
                     const statusText = document.createElement('span');
                     statusText.classList.add('file-status-text');
-                    statusText.textContent = 'No receipt uploaded yet.';
+                    statusText.textContent = 'Upload a new receipt to replace current one';
+                    fileStatusContainer.appendChild(statusText);
+                } else {
+                    // No existing image
+                    const statusText = document.createElement('span');
+                    statusText.classList.add('file-status-text');
+                    statusText.textContent = 'No receipt uploaded yet';
                     fileStatusContainer.appendChild(statusText);
                 }
 
@@ -803,25 +837,33 @@ function fetchTransactionData(transactionId) {
             alert('Could not load transaction details.');
         });
 }
-
-// New change event listener for file input to update displayed file name
+// File change event listener
 const editFile = document.getElementById('editFile');
-const fileStatusContainer = document.getElementById('fileStatusContainer'); // New element reference
+const fileStatusContainer = document.getElementById('fileStatusContainer');
 
 editFile.addEventListener('change', (e) => {
     const fileName = e.target.files.length > 0 ? e.target.files[0].name : '';
     const uploadButtonText = document.getElementById('uploadButtonText');
 
     if (fileName) {
-        // When a new file is chosen, update the main upload button text
-        uploadButtonText.textContent = `File Chosen: ${fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName}`;
+        // When a new file is chosen
+        uploadButtonText.textContent = `New File: ${fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName}`;
         
-        // And clear the separate status container so it doesn't show the old image link
-        fileStatusContainer.innerHTML = ''; 
+        // Update status message
+        fileStatusContainer.innerHTML = '';
+        const statusText = document.createElement('span');
+        statusText.classList.add('file-status-text');
+        statusText.style.color = '#219a43';
+        statusText.textContent = 'New receipt will replace current one';
+        fileStatusContainer.appendChild(statusText);
     } else {
-        // If the file selection is cancelled
-        uploadButtonText.textContent = 'Upload New Image';
-        // The original logic in fetchTransactionData will restore the old link if the modal is reopened
+        // If file selection is cancelled
+        uploadButtonText.textContent = 'Upload New Receipt';
+        fileStatusContainer.innerHTML = '';
+        const statusText = document.createElement('span');
+        statusText.classList.add('file-status-text');
+        statusText.textContent = 'Upload a new receipt to replace current one';
+        fileStatusContainer.appendChild(statusText);
     }
 });
 function updateTransaction() {

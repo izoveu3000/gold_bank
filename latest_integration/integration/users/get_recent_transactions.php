@@ -20,7 +20,7 @@ try {
             ta.reference_number
         FROM transaction t
         LEFT JOIN transaction_approve ta ON t.transaction_id = ta.tran_id
-        WHERE t.user_id = ? AND transaction_status IN ('approve', 'reject','pending','cancel','warn')
+        WHERE t.user_id = ? AND transaction_status IN ('approve', 'reject')
         ORDER BY t.date DESC
         LIMIT 6
     ";

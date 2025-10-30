@@ -27,21 +27,18 @@ try {
     // Check if we should show filtered results
     $is_filtered = $has_search || $has_type_filter || $has_status_filter || $has_all_types || $has_all_status;
 
-    // Build base query
+    // Build base query - REMOVED currency join since currency table is deleted
     $query = "SELECT 
                 t.transaction_id,
                 t.user_id,
-                t.currency_id,
                 t.amount,
                 t.price,
                 t.transaction_type,
                 t.transaction_status,
                 t.date,
                 t.is_read,
-                c.currency_name,
                 ta.reference_number
             FROM transaction t
-            LEFT JOIN currency c ON t.currency_id = c.currency_id
             LEFT JOIN transaction_approve ta ON t.transaction_id = ta.tran_id
             WHERE t.transaction_status != 'pending' AND t.transaction_status != '1'
             AND t.user_id = ?"; // <-- SECURITY FIX: User ID is ALWAYS filtered here
@@ -69,7 +66,6 @@ try {
             $transactions[] = $row;
         }
 
-        // ... (rest of the default response is unchanged) ...
         echo json_encode([
             'success' => true,
             'transactions' => $transactions,
@@ -84,7 +80,6 @@ try {
         ]);
 
         $stmt->close();
-        // $conn->close(); // Keep connection open for now to avoid issues
         exit();
     }
 
@@ -139,24 +134,15 @@ try {
     }
 
     // --- Get total count for pagination ---
-    // The count query MUST use prepared statements too to be safe, but since you are using 
-    // a non-prepared query for count, we must manually inject the user ID here too.
-    
-    // We rebuild the WHERE clause for the count query to mirror the main query filters
-    $count_where_clause = "WHERE t.transaction_status != 'pending' AND t.transaction_status != '1' AND t.user_id = $user_id"; // <-- SECURITY FIX: Injected $user_id
+    $count_where_clause = "WHERE t.transaction_status != 'pending' AND t.transaction_status != '1' AND t.user_id = $user_id";
 
-    // Check for search filter (NOTE: This must be converted to prepared statement for full security,
-    // but preserving your original structure, we just inject the safe $user_id here)
     if ($has_search) {
-        // Since you're not using prepared statements for COUNT, you MUST escape the search_id if it came from user input.
-        // Assuming $conn is mysqli and using real_escape_string for safety in non-prepared count query
         $safe_search_id = $conn->real_escape_string($search_id);
         $count_where_clause .= " AND ta.reference_number LIKE '%$safe_search_id%'";
     }
     
     // Apply the same type filters for count query
     if ($has_type_filter) {
-        // ... (your existing type filter logic) ...
         if ($transaction_type === 'Account Recharge') {
             $count_where_clause .= " AND t.transaction_type = 'deposit'";
         } elseif ($transaction_type === 'Gold Purchase') {
@@ -168,7 +154,6 @@ try {
 
     // Apply the same status filters for count query
     if ($has_status_filter) {
-        // ... (your existing status filter logic) ...
         if ($status === 'Completed') {
             $count_where_clause .= " AND t.transaction_status = 'approved'";
         } elseif ($status === 'Rejected') {
@@ -178,7 +163,7 @@ try {
 
     $count_query = "SELECT COUNT(*) as total FROM transaction t 
                     LEFT JOIN transaction_approve ta ON t.transaction_id = ta.tran_id 
-                    $count_where_clause"; // <-- Updated
+                    $count_where_clause";
 
     $count_result = $conn->query($count_query);
     if (!$count_result) throw new Exception("Error running count query: " . $conn->error);
@@ -188,7 +173,6 @@ try {
 
     // Close connections
     $stmt->close();
-    // $conn->close(); // Closing happens in finally block below, but we'll leave it as is for now
 
     // Return response
     echo json_encode([
@@ -212,14 +196,13 @@ try {
     ]);
 
 } catch (Exception $e) {
-    error_log("Transaction Filter Error: " . $e->getMessage()); // Log error internally
-    http_response_code(500); // Set HTTP status code for error
+    error_log("Transaction Filter Error: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode([
         'success' => false,
         'error' => 'Server Error: Unable to process request.'
     ]);
 } finally {
-    // Ensure connection is closed cleanly, even on error
     if (isset($conn) && $conn) {
         $conn->close();
     }

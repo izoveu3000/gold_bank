@@ -14,11 +14,11 @@ $response = [
 ];
 
 try {
-    // 1. Get Total Gold Purchased (Assuming currency_id = 1 for gold)
+    // 1. Get Total Gold Purchased - Updated to use gold_holding from users table
     $sql_gold = "
-        SELECT SUM(amount) AS total_gold_oz
-        FROM wallet
-        WHERE user_id = ? AND currency_id = 1
+        SELECT gold_holding AS total_gold_oz
+        FROM users
+        WHERE user_id = ?
     ";
 
     if ($stmt = $conn->prepare($sql_gold)) {
@@ -26,8 +26,7 @@ try {
         $stmt->execute();
         $result_gold = $stmt->get_result();
         if ($row = $result_gold->fetch_assoc()) {
-            // Use coalesce (??) to ensure a numeric value is returned
-            $response['total_gold_purchased'] = $row['total_gold_oz'] ?? 0.00;
+            $response['total_gold_purchased'] = $row['total_gold_oz'] ?? 0.000;
         }
         $stmt->close();
     } else {

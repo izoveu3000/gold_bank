@@ -345,7 +345,7 @@ function loadRecentTransactions() {
             
             data.transactions.forEach(transaction => {
                 // Determine transaction type display text and icon
-               let typeDisplay = '';
+                let typeDisplay = '';
                 let icon = '';
                 let iconStyle = '';
                 
@@ -361,52 +361,47 @@ function loadRecentTransactions() {
                     typeDisplay = 'Withdrawal Request';
                     icon = 'arrow-up-circle';
                     iconStyle = 'background:#fff0f0;color:#cc0000;';
-                } 
-                else {
+                } else {
                     typeDisplay = transaction.transaction_type;
                     icon = 'dollar-sign';
                     iconStyle = 'background:#f0f0f0;color:#666;';
                 }
                 
-                // Format amount based on currency_id
+                // Format amount based on transaction type
                 let amountDisplay = '';
-                if (transaction.currency_id == 1) { // gold - amount in oz
+                if (transaction.transaction_type === 'gold purchase') {
                     amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
-                } else if (transaction.currency_id == 2) { // dollar - amount in $
-                    amountDisplay = `$${parseFloat(transaction.amount).toFixed(2)}`;
-                } else { // mmk - amount in MMK
+                } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
                     amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
+                } else {
+                    amountDisplay = `${parseFloat(transaction.amount).toFixed(2)}`;
                 }
                 
-                // Format price based on currency_id
+                // Format price based on transaction type
                 let priceDisplay = '';
-                if (transaction.currency_id == 1) { // gold - price in $ per oz
+                if (transaction.transaction_type === 'gold purchase') {
                     priceDisplay = new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     }).format(transaction.price);
-                } else if (transaction.currency_id == 2) { // dollar - price in MMK per $
+                } else {
                     priceDisplay = new Intl.NumberFormat('en-US').format(transaction.price) + ' MMK';
-                } else { // mmk - price unit (if any)
-                    priceDisplay = new Intl.NumberFormat('en-US').format(transaction.price);
                 }
                 
                 // Calculate and format total value
                 const totalValue = transaction.amount * transaction.price;
                 let totalDisplay = '';
                 
-                if (transaction.currency_id == 1) { // gold - total in $
+                if (transaction.transaction_type === 'gold purchase') {
                     totalDisplay = new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     }).format(totalValue);
-                } else if (transaction.currency_id == 2) { // dollar - total in MMK
-                    totalDisplay = new Intl.NumberFormat('en-US').format(totalValue) + ' MMK';
-                } else { // mmk - total in MMK
+                } else {
                     totalDisplay = new Intl.NumberFormat('en-US').format(totalValue) + ' MMK';
                 }
                 
@@ -427,10 +422,8 @@ function loadRecentTransactions() {
                     statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #2e7d32; color:#2e7d32; background: #eafaf1; padding:0.45em 1.2em; font-weight:500;">Completed</span>`;
                 } else if (transaction.transaction_status === 'rejected') {
                     statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #d32f2f; color:#d32f2f; background: #ffebee; padding:0.45em 1.2em; font-weight:500;">Rejected</span>`;
-                } else if (transaction.transaction_status === 'cancelled') {
-                    statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #757575; color:#757575; background: #f5f5f5; padding:0.45em 1.2em; font-weight:500;">Cancelled</span>`;
                 } else {
-                    statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #ff9800; color:#ff9800; background: #fff3e0; padding:0.45em 1.2em; font-weight:500;">Pending</span>`;
+                    statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #ff9800; color:#ff9800; background: #fff3e0; padding:0.45em 1.2em; font-weight:500;">${transaction.transaction_status}</span>`;
                 }
                 
                 html += `
@@ -467,7 +460,7 @@ function loadRecentTransactions() {
             // Refresh Feather icons
             feather.replace();
 
-			handleUrlHighlight();
+            handleUrlHighlight();
 
         })
         .catch(error => {
@@ -578,67 +571,59 @@ function displayTransactions(transactions) {
         let icon = '';
         let iconStyle = '';
         
-          if (transaction.transaction_type === 'gold purchase') {
-                    typeDisplay = 'Gold Purchase';
-                    icon = 'dollar-sign';
-                    iconStyle = 'background:#fff7e6;color:#a67c00;';
-                } else if (transaction.transaction_type === 'deposit') {
-                    typeDisplay = 'Account Recharge';
-                    icon = 'plus-circle';
-                    iconStyle = 'background:#e6f7ff;color:#0066cc;';
-                } else if (transaction.transaction_type === 'withdraw') {
-                    typeDisplay = 'Withdrawal Request';
-                    icon = 'arrow-up-circle';
-                    iconStyle = 'background:#fff0f0;color:#cc0000;';
-                } else {
-                    typeDisplay = transaction.transaction_type;
-                    icon = 'dollar-sign';
-                    iconStyle = 'background:#f0f0f0;color:#666;';
-                }
-        // Format amount based on currency_id
-        let amountDisplay = '';
-        if (transaction.currency_id == 1) { // gold - amount in oz
-            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
-        } else if (transaction.currency_id == 2) { // dollar - amount in $
-            amountDisplay = `$${parseFloat(transaction.amount).toFixed(2)}`;
-        } else { // mmk - amount in MMK
-            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
+        if (transaction.transaction_type === 'gold purchase') {
+            typeDisplay = 'Gold Purchase';
+            icon = 'dollar-sign';
+            iconStyle = 'background:#fff7e6;color:#a67c00;';
+        } else if (transaction.transaction_type === 'deposit') {
+            typeDisplay = 'Account Recharge';
+            icon = 'plus-circle';
+            iconStyle = 'background:#e6f7ff;color:#0066cc;';
+        } else if (transaction.transaction_type === 'withdraw') {
+            typeDisplay = 'Withdrawal Request';
+            icon = 'arrow-up-circle';
+            iconStyle = 'background:#fff0f0;color:#cc0000;';
+        } else {
+            typeDisplay = transaction.transaction_type;
+            icon = 'dollar-sign';
+            iconStyle = 'background:#f0f0f0;color:#666;';
         }
         
-        // Format price based on currency_id
+        // Format amount based on transaction type
+        let amountDisplay = '';
+        if (transaction.transaction_type === 'gold purchase') {
+            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
+        } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
+            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
+        } else {
+            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)}`;
+        }
+        
+        // Format price based on transaction type
         let priceDisplay = '';
-        if (transaction.currency_id == 1) { // gold - price in $ per oz
+        if (transaction.transaction_type === 'gold purchase') {
             priceDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(transaction.price);
-        } else if (transaction.currency_id == 2) { // dollar - price in MMK per $
+        } else {
             priceDisplay = new Intl.NumberFormat('en-US').format(transaction.price) + ' MMK';
-        } else { // mmk - price unit (if any)
-            priceDisplay = new Intl.NumberFormat('en-US').format(transaction.price);
         }
         
         // Calculate and format total value
-        
-            const totalValueBeforeFee = transaction.amount * transaction.price;
-            // Calculate the service fee (3% of the totalValueBeforeFee)
-            const serviceFee = totalValueBeforeFee * 0.03;
-            // Add the service fee to get the final totalValue
-            const totalValue = totalValueBeforeFee + serviceFee; 
+        const totalValue = transaction.amount * transaction.price;
         let totalDisplay = '';
         
-        if (transaction.currency_id == 1) { // gold - total in $
+        if (transaction.transaction_type === 'gold purchase') {
             totalDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(totalValue);
-        } else if (transaction.currency_id == 2) { // dollar - total in MMK
-            totalDisplay = new Intl.NumberFormat('en-US').format(totalValue) + ' MMK';
-        } else { // mmk - total in MMK
+        } else {
             totalDisplay = new Intl.NumberFormat('en-US').format(totalValue) + ' MMK';
         }
         
@@ -655,7 +640,7 @@ function displayTransactions(transactions) {
         
         // Determine status badge style
         let statusBadge = '';
-        if (transaction.transaction_status === 'approved') {
+        if (transaction.transaction_status === 'approve') {
             statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #2e7d32; color:#2e7d32; background: #eafaf1; padding:0.45em 1.2em; font-weight:500;">Completed</span>`;
         } else if (transaction.transaction_status === 'rejected') {
             statusBadge = `<span class="badge" style="font-size:1rem; border-radius:999px; border:1.5px solid #d32f2f; color:#d32f2f; background: #ffebee; padding:0.45em 1.2em; font-weight:500;">Rejected</span>`;
