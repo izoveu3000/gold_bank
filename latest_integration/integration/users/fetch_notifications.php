@@ -14,7 +14,7 @@ $unread_sql = "
         `transaction`
     WHERE 
         user_id = ?
-        AND transaction_status IN ('approve', 'reject', 'warn')
+        AND transaction_status IN ('approved', 'rejected', 'warn')
         AND is_read = 0;
 ";
 $stmt_unread = $conn->prepare($unread_sql);
@@ -36,7 +36,7 @@ $display_sql = "
         `transaction` t
     WHERE 
         t.user_id = ?
-        AND t.transaction_status IN ('approve', 'reject', 'warn')
+        AND t.transaction_status IN ('approved', 'rejected', 'warn')
         AND t.is_read = 0
     ORDER BY 
         t.date DESC
@@ -60,8 +60,8 @@ while ($row = $result_display->fetch_assoc()) {
     }
     
     if($row['transaction_type']==="deposit" || $row['transaction_type']==="withdraw"){
-        $currency_name = "coin";
-    }else if($row['transaction_type']==="user_gold_buy" || $row['transaction_type']==="user_gold_sell"){
+        $currency_name = "MMK";
+    }else if($row['transaction_type']==="gold purchase" || $row['transaction_type']==="sell gold"){
         $currency_name="gold";
     }
 

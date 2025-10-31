@@ -5,13 +5,20 @@ include 'database.php';
 $user_id = 5;
 $response_data = [];
 
-// Handle the wallet balance query
+// Handle the wallet balance query (using user_balance table)
 $currency_id = isset($_GET['currency_id']) ? intval($_GET['currency_id']) : null;
 if ($currency_id !== null) {
-    $sql = "SELECT amount FROM wallet WHERE user_id = ? AND currency_id = ?";
+    // For currency_id = 1 (gold), get actual_gold_balance
+    // For currency_id = 2 (coin), get actual_coin_balance
+    if ($currency_id == 1) {
+        $sql = "SELECT actual_gold_balance AS amount FROM user_balance WHERE user_id = ?";
+    } else if ($currency_id == 2) {
+        $sql = "SELECT actual_coin_balance AS amount FROM user_balance WHERE user_id = ?";
+    }
+    
     $stmt = $conn->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("ii", $user_id, $currency_id);
+        $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
@@ -24,10 +31,10 @@ if ($currency_id !== null) {
     }
 }
 
-// Handle the gold price query
+// Handle the gold price query (using gold_price_history table)
 if (isset($_GET['gold_price'])) {
-    // Get latest gold price and its timestamp
-    $query_latest = "SELECT price, changed_at FROM currency_price WHERE currency_id = 1 ORDER BY changed_at DESC LIMIT 1";
+    // Get latest gold price from gold_price_history
+    $query_latest = "SELECT base_sell_price AS price, changed_at FROM gold_price_history ORDER BY changed_at DESC LIMIT 1";
     $result_latest = $conn->query($query_latest);
     $latest_price_row = $result_latest->fetch_assoc();
     
@@ -36,98 +43,84 @@ if (isset($_GET['gold_price'])) {
 
     // Get previous day's closing price
     $previous_price = null;
-    $query_previous = "SELECT price FROM currency_price WHERE currency_id = 1 ORDER BY changed_at DESC LIMIT 1 OFFSET 1;";
+    $query_previous = "SELECT base_sell_price AS price FROM gold_price_history ORDER BY changed_at DESC LIMIT 1 OFFSET 1";
     $result_previous = $conn->query($query_previous);
     $previous_price_row = $result_previous->fetch_assoc();
     $previous_price = $previous_price_row['price'] ?? null;
 
-    // Calculate difference and percentage change
+    // Calculate difference
     $difference = ($latest_price && $previous_price) ? $latest_price - $previous_price : 0;
-    // $percentage_change = ($previous_price > 0) ? ($difference / $previous_price) * 100 : 0;
     $is_up = $difference >= 0;
 
     // Add gold price data to the response array
     $response_data['price'] = $latest_price;
     $response_data['changed_at'] = $last_updated;
     $response_data['difference'] = $difference;
-    // $response_data['percentage_change'] = $percentage_change;
     $response_data['is_up'] = $is_up;
 }
 
-// Handle the portfolio value query (NEW SECTION)
+// Handle the portfolio value query
 if (isset($_GET['portfolio_value'])) {
-    // 1. Get latest Gold Price (currency_id = 1)
-    $query_gold_price = "SELECT price FROM currency_price WHERE currency_id = 1 ORDER BY changed_at DESC LIMIT 1";
+    // 1. Get latest Gold Price from gold_price_history
+    $query_gold_price = "SELECT base_sell_price AS price FROM gold_price_history ORDER BY changed_at DESC LIMIT 1";
     $result_gold_price = $conn->query($query_gold_price);
     $gold_price = $result_gold_price->num_rows > 0 ? (float)($result_gold_price->fetch_assoc()['price']) : 0.00;
 
-    // 2. Get User's Gold Amount (currency_id = 1)
-    $query_gold_amount = "SELECT amount FROM wallet WHERE user_id = ? AND currency_id = 1";
-    $stmt_gold = $conn->prepare($query_gold_amount);
-    if ($stmt_gold) {
-        $stmt_gold->bind_param("i", $user_id);
-        $stmt_gold->execute();
-        $result_gold = $stmt_gold->get_result();
-        $gold_amount = $result_gold->num_rows > 0 ? (float)($result_gold->fetch_assoc()['amount']) : 0.00;
-        $stmt_gold->close();
-    } else { $gold_amount = 0.00; }
-
-    // 3. Get User's Dollar Amount (currency_id = 2)
-    $query_dollar_amount = "SELECT amount FROM wallet WHERE user_id = ? AND currency_id = 2";
-    $stmt_dollar = $conn->prepare($query_dollar_amount);
-    if ($stmt_dollar) {
-        $stmt_dollar->bind_param("i", $user_id);
-        $stmt_dollar->execute();
-        $result_dollar = $stmt_dollar->get_result();
-        $dollar_amount = $result_dollar->num_rows > 0 ? (float)($result_dollar->fetch_assoc()['amount']) : 0.00;
-        $stmt_dollar->close();
-    } else { $dollar_amount = 0.00; }
+    // 2. Get User's Gold Balance and Coin Balance
+    $query_balance = "SELECT actual_gold_balance, actual_coin_balance FROM user_balance WHERE user_id = ?";
+    $stmt_balance = $conn->prepare($query_balance);
+    $gold_amount = 0.00;
+    $coin_amount = 0.00;
     
-    // 4. Calculate Portfolio Value
-    $portfolio_value = ($gold_amount * $gold_price) + $dollar_amount;
+    if ($stmt_balance) {
+        $stmt_balance->bind_param("i", $user_id);
+        $stmt_balance->execute();
+        $result_balance = $stmt_balance->get_result();
+        if ($result_balance->num_rows > 0) {
+            $balance_row = $result_balance->fetch_assoc();
+            $gold_amount = (float)$balance_row['actual_gold_balance'];
+            $coin_amount = (float)$balance_row['actual_coin_balance'];
+        }
+        $stmt_balance->close();
+    }
+    
+    // 3. Calculate Portfolio Value: (Gold Balance * Gold Price) + Coin Balance
+    $portfolio_value = ($gold_amount * $gold_price) + $coin_amount;
 
     $response_data['portfolio_value'] = $portfolio_value;
 }
 
 // Handle the Portfolio P&L query
 if (isset($_GET['profit_loss'])) {
-    
     // 1. Calculate Current Portfolio Value
     
-    // 1a. Get latest Gold Price (currency_id = 1)
-    $query_gold_price = "SELECT price FROM currency_price WHERE currency_id = 1 ORDER BY changed_at DESC LIMIT 1";
+    // 1a. Get latest Gold Price
+    $query_gold_price = "SELECT base_sell_price AS price FROM gold_price_history ORDER BY changed_at DESC LIMIT 1";
     $result_gold_price = $conn->query($query_gold_price);
     $gold_price = $result_gold_price->num_rows > 0 ? (float)($result_gold_price->fetch_assoc()['price']) : 0.00;
 
-    // 1b. Get User's Gold Amount (currency_id = 1)
-    $query_gold_amount = "SELECT amount FROM wallet WHERE user_id = ? AND currency_id = 1";
-    $stmt_gold = $conn->prepare($query_gold_amount);
+    // 1b. Get User's Gold and Coin Balance
+    $query_balance = "SELECT actual_gold_balance, actual_coin_balance FROM user_balance WHERE user_id = ?";
+    $stmt_balance = $conn->prepare($query_balance);
     $gold_amount = 0.00;
-    if ($stmt_gold) {
-        $stmt_gold->bind_param("i", $user_id);
-        $stmt_gold->execute();
-        $result_gold = $stmt_gold->get_result();
-        $gold_amount = $result_gold->num_rows > 0 ? (float)($result_gold->fetch_assoc()['amount']) : 0.00;
-        $stmt_gold->close();
-    } 
-
-    // 1c. Get User's Dollar Amount (currency_id = 2)
-    $query_dollar_amount = "SELECT amount FROM wallet WHERE user_id = ? AND currency_id = 2";
-    $stmt_dollar = $conn->prepare($query_dollar_amount);
-    $dollar_amount = 0.00;
-    if ($stmt_dollar) {
-        $stmt_dollar->bind_param("i", $user_id);
-        $stmt_dollar->execute();
-        $result_dollar = $stmt_dollar->get_result();
-        $dollar_amount = $result_dollar->num_rows > 0 ? (float)($result_dollar->fetch_assoc()['amount']) : 0.00;
-        $stmt_dollar->close();
+    $coin_amount = 0.00;
+    
+    if ($stmt_balance) {
+        $stmt_balance->bind_param("i", $user_id);
+        $stmt_balance->execute();
+        $result_balance = $stmt_balance->get_result();
+        if ($result_balance->num_rows > 0) {
+            $balance_row = $result_balance->fetch_assoc();
+            $gold_amount = (float)$balance_row['actual_gold_balance'];
+            $coin_amount = (float)$balance_row['actual_coin_balance'];
+        }
+        $stmt_balance->close();
     }
     
-    $current_portfolio_value = ($gold_amount * $gold_price) + $dollar_amount;
+    $current_portfolio_value = ($gold_amount * $gold_price) + $coin_amount;
 
-    // 2. Calculate Total Approved Withdrawals (Total Possessions Taken Out)
-    // We assume the 'price' column holds the USD value for deposit/withdraw transactions.
-    $query_withdrawals = "SELECT SUM(price) AS total_withdrawals FROM `transaction` WHERE user_id = ? AND transaction_type = 'withdraw' AND transaction_status = 'approved'";
+    // 2. Calculate Total Approved Withdrawals
+    $query_withdrawals = "SELECT SUM(amount) AS total_withdrawals FROM `transaction` WHERE user_id = ? AND transaction_type = 'withdraw' AND transaction_status = 'approved'";
     $stmt_withdrawals = $conn->prepare($query_withdrawals);
     $total_withdrawals = 0.00;
     if ($stmt_withdrawals) {
@@ -138,9 +131,8 @@ if (isset($_GET['profit_loss'])) {
         $stmt_withdrawals->close();
     }
 
-    // 3. Calculate Total Approved Deposits (Total Investment Cost)
-    // We assume the 'price' column holds the USD value for deposit/withdraw transactions.
-    $query_deposits = "SELECT SUM(price) AS total_deposits FROM `transaction` WHERE user_id = ? AND transaction_type = 'deposit' AND transaction_status = 'approved'";
+    // 3. Calculate Total Approved Deposits
+    $query_deposits = "SELECT SUM(amount) AS total_deposits FROM `transaction` WHERE user_id = ? AND transaction_type = 'deposit' AND transaction_status = 'approved'";
     $stmt_deposits = $conn->prepare($query_deposits);
     $total_deposits = 0.00;
     if ($stmt_deposits) {
@@ -157,14 +149,13 @@ if (isset($_GET['profit_loss'])) {
     $response_data['profit_loss'] = $profit_loss;
 }
 
-// Handle the 24h gold price history query (NEW BLOCK)
+// Handle the 24h gold price history query
 if (isset($_GET['gold_price_24h'])) {
     // Calculate timestamp for 24 hours ago
     $one_day_ago = date('Y-m-d H:i:s', strtotime('-24 hours'));
     
-    // Query to get price history for the last 24 hours for gold (currency_id = 1)
-    // Order by changed_at ASC to plot in chronological order
-    $query_24h_history = "SELECT price, changed_at FROM currency_price WHERE currency_id = 1 AND changed_at >= ? ORDER BY changed_at ASC";
+    // Query to get price history for the last 24 hours from gold_price_history
+    $query_24h_history = "SELECT base_sell_price AS price, changed_at FROM gold_price_history WHERE changed_at >= ? ORDER BY changed_at ASC";
     $stmt_24h = $conn->prepare($query_24h_history);
     $price_history = [];
     
@@ -185,17 +176,17 @@ if (isset($_GET['gold_price_24h'])) {
     $response_data['price_history'] = $price_history;
 }
 
-// Handle the 24h gold price stats query (Low/High) 
+// Handle the 24h gold price stats query (Low/High)
 if (isset($_GET['gold_price_stats_24h'])) {
     $one_day_ago = date('Y-m-d H:i:s', strtotime('-24 hours'));
     
-    // Query to get MIN and MAX price for gold (currency_id = 1) in the last 24 hours
+    // Query to get MIN and MAX price from gold_price_history in the last 24 hours
     $query_24h_stats = "
         SELECT 
-            MIN(price) AS price_low, 
-            MAX(price) AS price_high
-        FROM currency_price 
-        WHERE currency_id = 1 AND changed_at >= ?
+            MIN(base_sell_price) AS price_low, 
+            MAX(base_sell_price) AS price_high
+        FROM gold_price_history 
+        WHERE changed_at >= ?
     ";
     $stmt_24h_stats = $conn->prepare($query_24h_stats);
     $stats_data = [
@@ -217,7 +208,6 @@ if (isset($_GET['gold_price_stats_24h'])) {
     
     $response_data['price_stats_24h'] = $stats_data;
 }
-
 
 $conn->close();
 

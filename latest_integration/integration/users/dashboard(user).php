@@ -483,7 +483,7 @@ function fetchAndDisplay24hStats() {
 
             const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'MMK',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(value);

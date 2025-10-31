@@ -14,10 +14,10 @@ $response = [
 ];
 
 try {
-    // 1. Get Total Gold Purchased - Updated to use gold_holding from users table
+    // 1. Get Total Gold Purchased - Updated to use actual_gold_balance from user_balance table
     $sql_gold = "
-        SELECT gold_holding AS total_gold_oz
-        FROM users
+        SELECT actual_gold_balance AS total_gold_oz
+        FROM user_balance
         WHERE user_id = ?
     ";
 

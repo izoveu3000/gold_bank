@@ -291,7 +291,7 @@ include 'header.php';
     const countElement = document.getElementById('total-transactions-count');
 
     // Set a loading state
-    goldElement.textContent = '... oz';
+    goldElement.textContent = '... Kyatha';
     countElement.textContent = '...';
 
     // Use the fetch API to call the new PHP file
@@ -305,7 +305,7 @@ include 'header.php';
         .then(data => {
             if (data.error) {
                 console.error('PHP Error:', data.error);
-                goldElement.textContent = '-- oz';
+                goldElement.textContent = '-- Kyatha';
                 countElement.textContent = '--';
                 return;
             }
@@ -313,14 +313,14 @@ include 'header.php';
             // 1. Update Total Gold Purchased (formatted to 2 decimal places)
             const formattedGold = (data.total_gold_purchased !== undefined) ? 
                                    parseFloat(data.total_gold_purchased).toFixed(2) : '0.00';
-            goldElement.textContent = formattedGold + ' oz';
+            goldElement.textContent = formattedGold + ' Kyatha';
 
             // 2. Update Total Transactions
             countElement.textContent = data.total_transactions;
         })
         .catch(error => {
             console.error('Error fetching history stats:', error);
-            goldElement.textContent = 'Error oz';
+            goldElement.textContent = 'Error Kyatha';
             countElement.textContent = 'Error';
         });
 }
@@ -374,7 +374,7 @@ function loadRecentTransactions() {
                 // Format amount based on transaction type
                 let amountDisplay = '';
                 if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
-                    amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
+                    amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} Kyatha`;
                 } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
                     amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
                 } else {
@@ -600,7 +600,7 @@ function displayTransactions(transactions) {
         // Format amount based on transaction type
         let amountDisplay = '';
         if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
-            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} oz`;
+            amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} Kyatha`;
         } else if (transaction.transaction_type === 'deposit' || transaction.transaction_type === 'withdraw') {
             amountDisplay = `${parseFloat(transaction.amount).toFixed(2)} MMK`;
         } else {
@@ -612,7 +612,7 @@ function displayTransactions(transactions) {
         if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
             priceDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'MMK',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(transaction.price);
@@ -627,7 +627,7 @@ function displayTransactions(transactions) {
         if (transaction.transaction_type === 'gold purchase' || transaction.transaction_type === 'sell gold') {
             totalDisplay = new Intl.NumberFormat('en-US', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'MMK',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(totalValue);

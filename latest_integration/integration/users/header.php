@@ -202,7 +202,7 @@ function fetchAndDisplayNotifications() {
                     
                     // Amount display logic
                     const amountValue = (notif.type.includes('deposit') || notif.type.includes('withdrawal')) 
-                                        ? parseFloat(notif.price).toLocaleString('en') + ' Coins' 
+                                        ? parseFloat(notif.amount*notif.price).toLocaleString('en') + ' MMK' 
                                         : notif.amount + ' ' + notif.currency;
 
  // NEW: Determine if it should be marked as read on click
@@ -221,7 +221,7 @@ function fetchAndDisplayNotifications() {
                     } else if (status === 'rejected') {
                         // If the status is 'rejected', redirect to the history page
                         linkHref = `history(user).php?highlight_id=${notif.id}${markReadParam}`; // <<< MODIFIED
-                        message = `<span class="fw-bold">${amountValue}</span> ${notif.type} has been <span class="fw-bold text-danger">rejected</span>.`;
+                         message = `<span class="fw-bold">${amountValue}</span> ${notif.type} has been <span class="fw-bold text-danger">rejected</span>.`;
                      }
 
                     // 3. Build the List Item HTML
